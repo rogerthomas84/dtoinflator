@@ -1,0 +1,25 @@
+{
+    "name": "rogerthomas84/dtoinflator",
+    "description": "DtoInflator is a library to inflate arrays or objects into their corresponding models.",
+    "keywords": ["dtoinflator", "dto", "helper"],
+    "homepage": "https://github.com/rogerthomas84/dtoinflator",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roger Thomas",
+            "email": "rogere84@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    }
+}

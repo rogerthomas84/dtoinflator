@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="tests/bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="All DtoInflator Tests">
+            <directory>tests/DtoInflatorTests</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>src/DtoInflator</directory>
+            <exclude>
+                <directory>tests/DtoInflatorTests</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
