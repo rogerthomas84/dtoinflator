@@ -40,7 +40,7 @@ class DtoInflatorFromObjectTest extends TestCase
     {
         $person = $this->getPersonDataObject();
         $inflated = ExamplePersonDto::inflateSingleObject($person);
-        $this->assertEquals($person->name, $inflated->name);
+        $this->assertEquals($person->name, $inflated->firstName);
         $this->assertEquals($person->age, $inflated->age);
     }
 
@@ -51,7 +51,7 @@ class DtoInflatorFromObjectTest extends TestCase
         $person->favouritePet = $pet;
         $person->pets = [$pet];
         $inflated = ExamplePersonDto::inflateSingleObject($person);
-        $this->assertEquals($person->name, $inflated->name);
+        $this->assertEquals($person->name, $inflated->firstName);
         $this->assertEquals($person->age, $inflated->age);
         $this->assertInstanceOf(ExamplePetDto::class, $inflated->favouritePet);
         $this->assertEquals($pet->name, $inflated->favouritePet->name);
@@ -78,7 +78,7 @@ class DtoInflatorFromObjectTest extends TestCase
         $person->favouritePet = $pets[0];
         $person->pets = $pets;
         $inflated = ExamplePersonDto::inflateSingleObject($person);
-        $this->assertEquals($person->name, $inflated->name);
+        $this->assertEquals($person->name, $inflated->firstName);
         $this->assertEquals($person->age, $inflated->age);
         $this->assertInstanceOf(ExamplePetDto::class, $inflated->favouritePet);
         $this->assertEquals($pets[0]->name, $inflated->favouritePet->name);

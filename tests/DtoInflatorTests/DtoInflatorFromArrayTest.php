@@ -39,7 +39,7 @@ class DtoInflatorFromArrayTest extends TestCase
     {
         $person = $this->getPersonDataArray();
         $inflated = ExamplePersonDto::inflateSingleArray($person);
-        $this->assertEquals($person['name'], $inflated->name);
+        $this->assertEquals($person['name'], $inflated->firstName);
         $this->assertEquals($person['age'], $inflated->age);
     }
 
@@ -49,7 +49,7 @@ class DtoInflatorFromArrayTest extends TestCase
         $pet = $this->getPetDataArray();
         $person['favouritePet'] = $pet;
         $inflated = ExamplePersonDto::inflateSingleArray($person);
-        $this->assertEquals($person['name'], $inflated->name);
+        $this->assertEquals($person['name'], $inflated->firstName);
         $this->assertEquals($person['age'], $inflated->age);
         $this->assertInstanceOf(ExamplePetDto::class, $inflated->favouritePet);
         $this->assertCount(count($pet['foods']), $inflated->favouritePet->foods);
@@ -78,7 +78,7 @@ class DtoInflatorFromArrayTest extends TestCase
         $person['favouritePet'] = $pets[0];
         $person['pets'] = $pets;
         $inflated = ExamplePersonDto::inflateSingleArray($person);
-        $this->assertEquals($person['name'], $inflated->name);
+        $this->assertEquals($person['name'], $inflated->firstName);
         $this->assertEquals($person['age'], $inflated->age);
         $this->assertInstanceOf(ExamplePetDto::class, $inflated->favouritePet);
         foreach ($inflated->pets as $k => $petDto) {
@@ -124,7 +124,7 @@ class DtoInflatorFromArrayTest extends TestCase
             $this->assertInstanceOf(ExamplePersonDto::class, $aPerson);
             $this->assertInstanceOf(ExamplePetDto::class, $aPerson->favouritePet);
 
-            $this->assertEquals($people[$pKey]['name'], $aPerson->name);
+            $this->assertEquals($people[$pKey]['name'], $aPerson->firstName);
             $this->assertEquals($people[$pKey]['age'], $aPerson->age);
 
             $this->assertEquals($people[$pKey]['favouritePet']['name'], $aPerson->favouritePet->name);
@@ -159,7 +159,7 @@ class DtoInflatorFromArrayTest extends TestCase
             $this->personCounter++;
         }
         return [
-            'name' => $names[$counter] . ' Bloggs',
+            'name' => $names[$counter],
             'age' => rand(18, 50)
         ];
     }

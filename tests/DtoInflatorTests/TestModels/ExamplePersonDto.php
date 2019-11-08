@@ -12,7 +12,7 @@ class ExamplePersonDto extends DtoInflatorAbstract
     /**
      * @var string
      */
-    public $name;
+    public $firstName;
 
     /**
      * @var string
@@ -28,6 +28,10 @@ class ExamplePersonDto extends DtoInflatorAbstract
      * @var ExamplePetDto
      */
     public $favouritePet;
+
+    protected $fieldToFieldMap = [
+        'name' => 'firstName'
+    ];
 
     protected $keyToClassMap = [
         'pets' => '\DtoInflatorTests\TestModels\ExamplePetDto[]',

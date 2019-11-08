@@ -25,6 +25,15 @@ abstract class DtoInflatorAbstract
     protected $unmappedFields = [];
 
     /**
+     * An array holding original key to new keys.
+     * @example [
+     *      'some_underscore_key' => 'someCamelCaseKey'
+     * ]
+     * @var array
+     */
+    protected $fieldToFieldMap = [];
+
+    /**
      * @return array
      */
     protected function getKeyToClassMap()
@@ -204,6 +213,9 @@ abstract class DtoInflatorAbstract
             }
             if (in_array($k, $inst->getPropertyExclusions())) {
                 continue;
+            }
+            if (array_key_exists($k, $inst->fieldToFieldMap)) {
+                $k = $inst->fieldToFieldMap[$k];
             }
 
             if (is_array($v) && array_key_exists($k, $classMap)) {

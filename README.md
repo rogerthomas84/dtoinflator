@@ -37,6 +37,18 @@ protected $keyToClassMap = [
 ];
 ```
 
+Sometimes you might want to change the name of a property to something else, for example in the case of API
+responses, you might want to change underscored keys with camelcase. To do this, simply expose the `fieldToFieldMap`
+variable in your model. Where the key is the original name, and the value is the new key to use in the DTO.
+
+**Please note, the newly named key is only used in inflation.**
+
+```
+protected $fieldToFieldMap = [
+    'my_underscore_key' => 'myUnderscoreKey'
+];
+```
+
 
 Examples
 --------
@@ -133,7 +145,7 @@ class Person extends \DtoInflator\DtoInflatorAbstract
     /**
      * @var string
      */
-    public $name;
+    public $firstName;
 
     /**
      * @var int
@@ -150,9 +162,19 @@ class Person extends \DtoInflator\DtoInflatorAbstract
      */
     public $colors;
 
+    /**
+     * @param array
+     */
+    protected $fieldToFieldMap = [
+        'name' => 'firstName' // maps the source key of `name` to the object property of `firstName`
+    ];
+
+    /**
+     * @param array
+     */
     protected $keyToClassMap = [
-        'favs' => '\MyNamespace\Favourite',
-        'colors' => '\MyNamespace\ColorItem[]'
+        'favs' => '\MyNamespace\Favourite',  // maps the object property of `favs` to an instance of the `Favourite` object
+        'colors' => '\MyNamespace\ColorItem[]'   // maps the object property of `colors` to an array of `ColorItem` objects
     ];
 }
 
