@@ -1,6 +1,9 @@
 <?php
 namespace DtoInflator;
 
+use ReflectionClass;
+use ReflectionException;
+
 /**
  * Class DtoInflatorAbstract
  * @package DtoInflator
@@ -162,11 +165,61 @@ abstract class DtoInflatorAbstract
     public static function inflateSingleObject(object $obj)
     {
         return self::inflateSingleArray(
-            json_decode(
-                json_encode($obj),
-                true
-            )
+            self::objectToArray($obj)
         );
+    }
+
+    /**
+     * Helper method to convert an object (with potential arrays or objects inside) into a normal array.
+     *
+     * @param object $obj
+     * @return array
+     */
+    protected static function objectToArray(object $obj)
+    {
+        $props = get_object_vars($obj);
+        $array = [];
+        foreach ($props as $k => $v) {
+            if (is_array($v)) {
+                $v = self::arrayToArray($v);
+            }
+            if (is_object($v)) {
+                $v = self::objectToArray($v);
+            }
+            $array[$k] = $v;
+        }
+        return $array;
+    }
+
+    /**
+     * Helper method to convert an array (with potential objects) into a normal array.
+     *
+     * @param array $arr
+     * @return array
+     */
+    protected static function arrayToArray(array $arr)
+    {
+        $data = [];
+        $isIntArray = false;
+        $i = 0;
+        foreach ($arr as $k => $v) {
+            if ($k === $i) {
+                $isIntArray = true;
+            }
+            if (is_array($v)) {
+                $v = self::arrayToArray($v);
+            }
+            if (is_object($v)) {
+                $v = self::objectToArray($v);
+            }
+            if ($isIntArray === true) {
+                $data[] = $v;
+            } else {
+                $data[$k] = $v;
+            }
+            $i++;
+        }
+        return $data;
     }
 
     /**
