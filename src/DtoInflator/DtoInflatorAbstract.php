@@ -159,10 +159,10 @@ abstract class DtoInflatorAbstract
     /**
      * Inflate a single DTO from an object instance.
      *
-     * @param object $obj
+     * @param stdClass|object $obj
      * @return $this
      */
-    public static function inflateSingleObject(object $obj)
+    public static function inflateSingleObject($obj)
     {
         return self::inflateSingleArray(
             self::objectToArray($obj)
@@ -172,10 +172,10 @@ abstract class DtoInflatorAbstract
     /**
      * Helper method to convert an object (with potential arrays or objects inside) into a normal array.
      *
-     * @param object $obj
+     * @param stdClass|object $obj
      * @return array
      */
-    protected static function objectToArray(object $obj)
+    protected static function objectToArray($obj)
     {
         $props = get_object_vars($obj);
         $array = [];
