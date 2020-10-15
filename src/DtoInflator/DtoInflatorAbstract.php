@@ -3,6 +3,7 @@ namespace DtoInflator;
 
 use ReflectionClass;
 use ReflectionException;
+use stdClass;
 
 /**
  * Class DtoInflatorAbstract
@@ -16,7 +17,7 @@ abstract class DtoInflatorAbstract
      *      'property' => '\Full\Class\Name'
      * ]
      *
-     * @var array
+     * @var string[]
      */
     protected $keyToClassMap = [];
 
@@ -32,9 +33,20 @@ abstract class DtoInflatorAbstract
      * @example [
      *      'some_underscore_key' => 'someCamelCaseKey'
      * ]
-     * @var array
+     * @var string[]
      */
     protected $fieldToFieldMap = [];
+
+    /**
+     * An array holding long keys to new shorter keys.
+     * This array gets processed AFTER the `fieldToFieldMap` array.
+     *
+     * @example [
+     *      'user_first_name' => 'fn'
+     * ]
+     * @var string[]
+     */
+    protected $longToShortKeys = [];
 
     /**
      * @return array
@@ -83,7 +95,7 @@ abstract class DtoInflatorAbstract
      */
     protected function getPropertyExclusions()
     {
-        return ['keyToClassMap', 'unmappedFields'];
+        return ['keyToClassMap', 'unmappedFields', 'longToShortKeys'];
     }
 
     /**
@@ -122,6 +134,9 @@ abstract class DtoInflatorAbstract
     /**
      * Inflate an array of DTOs from an array of arrays containing data.
      *
+     * @param array $data
+     * @param bool $fromShortKeys
+     * @return $this[]
      * @example
      * MyDto::inflateMultipleArrays(
      *      [
@@ -135,10 +150,8 @@ abstract class DtoInflatorAbstract
      *          ]
      *      ]
      * )
-     * @param array $data
-     * @return $this[]
      */
-    public static function inflateMultipleArrays(array $data)
+    public static function inflateMultipleArrays(array $data, $fromShortKeys = false)
     {
         if (empty($data)) {
             return [];
@@ -151,7 +164,7 @@ abstract class DtoInflatorAbstract
         }
         $final = [];
         foreach ($data as $_ => $datum) {
-            $final[] = $cl::inflateSingleArray($datum);
+            $final[] = $cl::inflateSingleArray($datum, $fromShortKeys);
         }
         return $final;
     }
@@ -160,12 +173,14 @@ abstract class DtoInflatorAbstract
      * Inflate a single DTO from an object instance.
      *
      * @param stdClass|object $obj
+     * @param bool $fromShortKeys
      * @return $this
      */
-    public static function inflateSingleObject($obj)
+    public static function inflateSingleObject($obj, $fromShortKeys = false)
     {
         return self::inflateSingleArray(
-            self::objectToArray($obj)
+            self::objectToArray($obj),
+            $fromShortKeys
         );
     }
 
@@ -226,9 +241,10 @@ abstract class DtoInflatorAbstract
      * Inflate an array of DTOs from an array of objects.
      *
      * @param object[] $data
+     * @param bool $fromShortKeys
      * @return $this[]
      */
-    public static function inflateMultipleObjects(array $data)
+    public static function inflateMultipleObjects(array $data, $fromShortKeys = false)
     {
         if (empty($data)) {
             return [];
@@ -241,7 +257,7 @@ abstract class DtoInflatorAbstract
         }
         $final = [];
         foreach ($data as $_ => $datum) {
-            $final[] = $cl::inflateSingleObject($datum);
+            $final[] = $cl::inflateSingleObject($datum, $fromShortKeys);
         }
         return $final;
     }
@@ -250,9 +266,10 @@ abstract class DtoInflatorAbstract
      * Inflate a DTO from an array of data.
      *
      * @param array $data
+     * @param bool $fromShortKeys
      * @return $this
      */
-    public static function inflateSingleArray(array $data)
+    public static function inflateSingleArray(array $data, $fromShortKeys = false)
     {
         $cl = get_called_class();
         $inst = new $cl();
@@ -260,6 +277,22 @@ abstract class DtoInflatorAbstract
             return null;
         }
         $classMap = $inst->getKeyToClassMap();
+        if ($fromShortKeys === true) {
+            $tmpKeys = $inst->longToShortKeys;
+            $shortToLong = [];
+            foreach ($tmpKeys as $k => $v) {
+                $shortToLong[$v] = $k;
+            }
+            $newData = [];
+            foreach ($data as $k => $v) {
+                if (array_key_exists($k, $shortToLong)) {
+                    $newData[$shortToLong[$k]] = $v;
+                } else {
+                    $newData[$k] = $v;
+                }
+            }
+            $data = $newData;
+        }
 
         foreach ($data as $k => $v) {
             if (is_int($k)) {
@@ -282,9 +315,9 @@ abstract class DtoInflatorAbstract
                 if (class_exists($subClassName)) {
                     /* @var $subClassName DtoInflatorAbstract */
                     if ($isMulti) {
-                        $v = $subClassName::inflateMultipleArrays($v);
+                        $v = $subClassName::inflateMultipleArrays($v, $fromShortKeys);
                     } else {
-                        $v = $subClassName::inflateSingleArray($v);
+                        $v = $subClassName::inflateSingleArray($v, $fromShortKeys);
                         if ($v === null) {
                             continue;
                         }

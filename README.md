@@ -49,6 +49,15 @@ protected $fieldToFieldMap = [
 ];
 ```
 
+You might also want to shorten keys every now and then. To do this, you can pass a second parameter into the
+inflate methods, defining where these keys need to be mapped.
+
+```
+protected $longToShortKeys = [
+    'user_first_name' => 'fn', // would map the key 'user_first_name' to use 'fn'
+    'user_last_name' => 'ln' // would map the key 'user_last_name' to use 'ln'
+];
+```
 
 Examples
 --------

@@ -4,6 +4,7 @@ namespace DtoInflatorTests;
 use DtoInflatorTests\TestModels\ExamplePersonDto;
 use DtoInflatorTests\TestModels\ExamplePetDto;
 use DtoInflatorTests\TestModels\ExamplePetFoodDto;
+use DtoInflatorTests\TestModels\ExampleUserDto;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -33,6 +34,66 @@ class DtoInflatorFromArrayTest extends TestCase
         $this->personCounter = 0;
         $this->foodCounter = 0;
         parent::setUp();
+    }
+
+    public function testShortKeyedUserSingleArray()
+    {
+        $array = [
+            'fn' => 'Joe',
+            'ln' => 'Bloggs',
+            'keyNotInShortArray' => 'FooBar',
+            'food' => [
+                'ingredient' => 'Grain',
+                'c' => 'Red'
+            ]
+        ];
+        $dto = ExampleUserDto::inflateSingleArray($array, true);
+        $this->assertEquals('Joe', $dto->firstName);
+        $this->assertEquals('Bloggs', $dto->lastName);
+        $this->assertEquals('FooBar', $dto->keyNotInShortArray);
+        $this->assertEquals('Grain', $dto->food->ingredient);
+        $this->assertEquals('Red', $dto->food->colour);
+    }
+
+    public function testShortKeyedUserSingleMultipleArrays()
+    {
+        $array = [
+            'fn' => 'Joe',
+            'ln' => 'Bloggs',
+            'keyNotInShortArray' => 'FooBar',
+            'food' => [
+                'ingredient' => 'Grain',
+                'c' => 'Orange'
+            ]
+        ];
+
+        $arrayTwo = [
+            'fn' => 'Jane',
+            'ln' => 'Doe',
+            'keyNotInShortArray' => 'Abc',
+            'food' => [
+                'ingredient' => 'Rice',
+                'c' => 'Brown'
+            ]
+        ];
+        $dtos = ExampleUserDto::inflateMultipleArrays(
+            [
+                $array,
+                $arrayTwo
+            ],
+            true
+        );
+        $this->assertEquals('Joe', $dtos[0]->firstName);
+        $this->assertEquals('Bloggs', $dtos[0]->lastName);
+        $this->assertEquals('FooBar', $dtos[0]->keyNotInShortArray);
+        $this->assertEquals('Grain', $dtos[0]->food->ingredient);
+        $this->assertEquals('Orange', $dtos[0]->food->colour);
+
+        $this->assertEquals('Jane', $dtos[1]->firstName);
+        $this->assertEquals('Doe', $dtos[1]->lastName);
+        $this->assertEquals('Abc', $dtos[1]->keyNotInShortArray);
+        $this->assertEquals('Rice', $dtos[1]->food->ingredient);
+        $this->assertEquals('Brown', $dtos[1]->food->colour);
     }
 
     public function testSingleRecordInflationFromArray()
