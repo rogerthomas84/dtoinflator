@@ -51,7 +51,7 @@ abstract class DtoInflatorAbstract
     /**
      * @return array
      */
-    protected function getKeyToClassMap()
+    protected function getKeyToClassMap(): array
     {
         return $this->keyToClassMap;
     }
@@ -62,7 +62,7 @@ abstract class DtoInflatorAbstract
      * @param string $name
      * @param mixed $value
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         if (property_exists($this, $name)) {
             $this->{$name} = $value;
@@ -77,7 +77,7 @@ abstract class DtoInflatorAbstract
      * @param string $name
      * @return mixed|null
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if (property_exists($this, $name)) {
             return $this->{$name};
@@ -93,9 +93,9 @@ abstract class DtoInflatorAbstract
      *
      * @return array
      */
-    protected function getPropertyExclusions()
+    protected function getPropertyExclusions(): array
     {
-        return ['keyToClassMap', 'unmappedFields', 'longToShortKeys'];
+        return ['keyToClassMap', 'unmappedFields', 'longToShortKeys', 'fieldToFieldMap'];
     }
 
     /**
@@ -103,7 +103,7 @@ abstract class DtoInflatorAbstract
      *
      * @return array
      */
-    public function asArray()
+    public function asArray(): array
     {
         $data = [];
         foreach (get_object_vars($this) as $k => $v) {
@@ -151,7 +151,7 @@ abstract class DtoInflatorAbstract
      *      ]
      * )
      */
-    public static function inflateMultipleArrays(array $data, $fromShortKeys = false)
+    public static function inflateMultipleArrays(array $data, $fromShortKeys = false): array
     {
         if (empty($data)) {
             return [];
@@ -190,7 +190,7 @@ abstract class DtoInflatorAbstract
      * @param stdClass|object $obj
      * @return array
      */
-    protected static function objectToArray($obj)
+    protected static function objectToArray($obj): array
     {
         $props = get_object_vars($obj);
         $array = [];
@@ -212,7 +212,7 @@ abstract class DtoInflatorAbstract
      * @param array $arr
      * @return array
      */
-    protected static function arrayToArray(array $arr)
+    protected static function arrayToArray(array $arr): array
     {
         $data = [];
         $isIntArray = false;
@@ -244,7 +244,7 @@ abstract class DtoInflatorAbstract
      * @param bool $fromShortKeys
      * @return $this[]
      */
-    public static function inflateMultipleObjects(array $data, $fromShortKeys = false)
+    public static function inflateMultipleObjects(array $data, $fromShortKeys = false): array
     {
         if (empty($data)) {
             return [];
